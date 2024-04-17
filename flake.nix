@@ -10,7 +10,7 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs { inherit system; };
 
         renterd = with pkgs;
           let
@@ -38,15 +38,13 @@
       in {
         packages = { inherit renterd; };
 
-        renterd = {
-          type = "app";
-          program = "${renterd}/bin/renterd";
+        apps = {
+          renterd = {
+            type = "app";
+            program = "${renterd}/bin/renterd";
+          };
         };
 
-        devShells.default = pkgs.devshell.mkShell {
-          imports = [ ];
-          packages = [ renterd ];
-        };
+        devShells.default = pkgs.mkShell { packages = [ renterd ]; };
       });
-
 }
