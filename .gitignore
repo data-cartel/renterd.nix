@@ -1,2 +1,8 @@
 .DS_Store
 .direnv/
+
+consensus/
+db/
+gateway/
+renterd.*
+transactionpool/

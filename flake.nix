@@ -2,9 +2,8 @@
   description = "Sia renterd";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     flake-utils.url = "github:numtide/flake-utils";
-
   };
 
   outputs = { self, nixpkgs, flake-utils }:
@@ -12,17 +11,18 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
-        renterd = with pkgs;
+        renterdPkg = with pkgs;
           let
+            baseUrl =
+              "https://github.com/SiaFoundation/renterd/releases/download";
+            version = "v1.0.8";
             zipUrl = if stdenv.isDarwin then {
-              url =
-                "https://github.com/SiaFoundation/renterd/releases/download/v1.0.6/renterd_darwin_amd64.zip";
-              hash = "sha256-YTJcJC52ZNswUrVclcYMiEfJKfEoJ1/X7p6nrEkGAg0=";
+              url = "${baseUrl}/${version}/renterd_darwin_amd64.zip";
+              hash = "sha256-k6wUwsTdrFF7l3sn2aEJpOksZ0PUWKVrNUqJ/gDzC/I=";
               stripRoot = false;
             } else {
-              url =
-                "https://github.com/SiaFoundation/renterd/releases/download/v1.0.6/renterd_linux_amd64.zip";
-              hash = "sha256-PGDwmwhXu8d6ivZ4GWVyPK+Z4FrEDRjnVqQsK5vouDE=";
+              url = "${baseUrl}/${version}/renterd_linux_amd64.zip";
+              hash = "sha256-2VE1HA1Bd4XiJ3UDfs9P/EV/XHMF0RjRfrS56Owmge4=";
               stripRoot = false;
             };
 
@@ -36,15 +36,20 @@
           };
 
       in {
-        packages = { inherit renterd; };
-
-        apps = {
-          renterd = {
-            type = "app";
-            program = "${renterd}/bin/renterd";
-          };
+        packages = {
+          renterd = renterdPkg;
+          default = renterdPkg;
         };
 
-        devShells.default = pkgs.mkShell { packages = [ renterd ]; };
+        apps = rec {
+          renterd = {
+            type = "app";
+            program = "${renterdPkg}/bin/renterd";
+          };
+          default = renterd;
+        };
+
+        devShells.default =
+          pkgs.mkShell { packages = [ pkgs.rclone renterdPkg ]; };
       });
 }
