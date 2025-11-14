@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, claude/** ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v14
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Check flake
+        run: nix flake check --show-trace
+
+      - name: Build renterd
+        run: nix build --print-build-logs .#renterd
+
+      - name: Verify binary exists
+        run: |
+          ls -lh result/bin/renterd
+          file result/bin/renterd
+
+      - name: Test renterd help
+        run: |
+          ./result/bin/renterd --help || true
+          ./result/bin/renterd version || true
