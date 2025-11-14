@@ -15,14 +15,14 @@
           let
             baseUrl =
               "https://github.com/SiaFoundation/renterd/releases/download";
-            version = "v1.0.8";
+            version = "v2.7.1";
             zipUrl = if stdenv.isDarwin then {
               url = "${baseUrl}/${version}/renterd_darwin_amd64.zip";
-              hash = "sha256-k6wUwsTdrFF7l3sn2aEJpOksZ0PUWKVrNUqJ/gDzC/I=";
+              hash = "sha256-w5EDYYq91IgdOSvpbeTy+VaJbBRaEOwEwTKq5j+mkho=";
               stripRoot = false;
             } else {
               url = "${baseUrl}/${version}/renterd_linux_amd64.zip";
-              hash = "sha256-2VE1HA1Bd4XiJ3UDfs9P/EV/XHMF0RjRfrS56Owmge4=";
+              hash = "sha256-zK76gv7/S4IJX5YZg42TtJ3ezZRZlcNv3sZ/cGtQUs0=";
               stripRoot = false;
             };
 
